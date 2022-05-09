@@ -67,49 +67,18 @@ class Longin():
             print("用户名或密码不正确，登录失败")
             exit()
 
-# qsxqj
-# xsxx
-# sjkList
-# xqjmcMap
-# xskbsfxstkzt
-# kbList
-# xsbjList
-# zckbsfxssj
-# djdzList
-# kblx
-# sfxsd
-# xqbzxxszList
-# xkkg
-# jxhjkcList
-# xnxqsfkz
-# class TimeTable():
-#     def __init__(self, session, table_url, term):
-#         if term == "now":
-#             xqm = 12
-#         else :
-#             xqm = 3
-#         data = {"xnm": 2021, "xqm": xqm}
-#         table_info = session.post(table_url, data=data).json()
-#
-#         for each in table_info["kbList"]:
-#             # print(each)
-#             plt = r'{} | {:<8s} | {:<13s} | {:<15s} | {:<22s} | {:<30s}'
-#             print(plt.format(each["xqjmc"], each["jc"], each["cdmc"], each["zcd"], each["kcmc"], each['xm']))
 
-def TimeTable(session, table_url, term):
+def TimeTable(session, table_url, term, xuenian):
     if term == "now":
         xqm = 12
     else:
         xqm = 3
-    data = {"xnm": 2021, "xqm": xqm}
+    data = {"xnm": xuenian, "xqm": xqm}
     table_info = session.post(table_url, data=data).json()
     # return table_info["kbList"]
     kb = []
     kbList = []
     for each in table_info["kbList"]:
-        # print(each)
-        # plt = r'{} | {:<8s} | {:<13s} | {:<15s} | {:<22s} | {:<30s}'
-        # print(plt.format(each["xqjmc"], each["jc"], each["cdmc"], each["zcd"], each["kcmc"], each['xm']))
         kbList.append(each["xqjmc"])
         kbList.append(each["jc"])
         kbList.append(each["cdmc"])
@@ -119,55 +88,102 @@ def TimeTable(session, table_url, term):
         kb.append(kbList)
     return kb
 
-# currentPage
-# currentResult
-# entityOrField
-# items
-# limit
-# offset
-# pageNo
-# pageSize
-# showCount
-# sortName
-# sortOrder
-# sorts
-# totalCount
-# totalPage
-# totalResult
-# class Cj():
-#     def __init__(self, session, cj_url):
-#         data = {"xnm": 2021, "xqm": 12, "queryModel.showCount": 15,"queryModel.currentPage": 1}
-#         table_info = session.post(cj_url, data=data).json()
-#
-#         for each in table_info["items"]:
-#             print(each)
-#             plt = r'{} | {:<8d} | {:<13d} | {:<15d} | {:<22d} | {:<30d}'
-#             print(plt.format(each["xqjmc"], each["jc"], each["cdmc"], each["zcd"], each["kcmc"], each['xm']))
-
-def Cj(session, cj_url, term):
+def Cj(session, cj_url, term, xuenian):
     if term == "now":
         x = 3
     else :
         x = 12
-    data = {"xnm": 2021, "xqm": x, "queryModel.showCount": 15, "queryModel.currentPage": 1}
+    data = {"xnm": xuenian, "xqm": x, "queryModel.showCount": 15, "queryModel.currentPage": 1}
     table_info = session.post(cj_url, data=data).json()
-    # print(table_info)
-    # if table_info['totalCount'] > 15:
-    #     for each in table_info["items"]:
-    #         print(each)
-    #     data = {"xnm": 2021, "xqm": x, "queryModel.showCount": 15, "queryModel.currentPage": 2}
-    #     table_info = session.post(cj_url, data=data).json()
-    #     for each in table_info["items"]:
-    #         print(each)
-    # else :
-    for each in table_info["items"]:
-            print(each)
-    # for each in table_info["items"]:
-    #     print(each)
-        # plt = r'{} | {:<8d} | {:<13d} | {:<15d} | {:<22d} | {:<30d}'
-        # print(plt.format(each["xqjmc"], each["jc"], each["cdmc"], each["zcd"], each["kcmc"], each['xm']))
+    cj = []
+    cjlist = []
+    if table_info['totalCount'] > 15:
 
-def login_to_kb(username: str, password: str, term: str):
+        for each in table_info["items"]:
+            cjlist.append(each['kcmc'])
+            mx_cj_url_data = {"xnm": xuenian, "xqm": x, "jxb_id": each['jxb_id']}
+            mx_cj_url = "https://jwgl.suse.edu.cn/cjcx/cjcx_cxXsXmcjList.html?gnmkdm=N305007"
+            mx_cj_info = session.post(mx_cj_url, data=mx_cj_url_data).json()
+            if len(mx_cj_info["items"]) == 2:
+                i = 1
+                if len(mx_cj_info["items"]) == 2:
+                    for each2 in mx_cj_info["items"]:
+                        cjlist.append(each2['xmblmc'])
+                        if 'xmcj' not in each2:
+                            cjlist.append("无成绩")
+                        else:
+                            cjlist.append(each2['xmcj'])
+                        if i == 1:
+                            cjlist.append('期末(0%)')
+                            cjlist.append('100')
+                        i += 1
+            else:
+                for each2 in mx_cj_info["items"]:
+                    cjlist.append(each2['xmblmc'])
+                    if 'xmcj' not in each2:
+                        cjlist.append("无成绩")
+                    else:
+                        cjlist.append(each2['xmcj'])
+            cj.append(cjlist)
+        data = {"xnm": xuenian, "xqm": x, "queryModel.showCount": 15, "queryModel.currentPage": 2}
+        table_info = session.post(cj_url, data=data).json()
+
+        for each in table_info["items"]:
+            cjlist.append(each['kcmc'])
+            mx_cj_url_data = {"xnm": xuenian, "xqm": x, "jxb_id": each['jxb_id']}
+            mx_cj_url = "https://jwgl.suse.edu.cn/cjcx/cjcx_cxXsXmcjList.html?gnmkdm=N305007"
+            mx_cj_info = session.post(mx_cj_url, data=mx_cj_url_data).json()
+            i = 1
+            if len(mx_cj_info["items"]) == 2:
+                for each2 in mx_cj_info["items"]:
+                    cjlist.append(each2['xmblmc'])
+                    if 'xmcj' not in each2:
+                        cjlist.append("无总成绩")
+                    else:
+                        cjlist.append(each2['xmcj'])
+                    if i == 1:
+                        cjlist.append('期末(0%)')
+                        cjlist.append('100')
+                    i += 1
+            else:
+                for each2 in mx_cj_info["items"]:
+                    cjlist.append(each2['xmblmc'])
+                    if 'xmcj' not in each2:
+                        cjlist.append("无总成绩")
+                    else:
+                        cjlist.append(each2['xmcj'])
+            cj.append(cjlist)
+
+    else :
+        for each in table_info["items"]:
+            cjlist.append(each['kcmc'])
+            mx_cj_url_data = {"xnm": xuenian, "xqm": x, "jxb_id": each['jxb_id']}
+            mx_cj_url = "https://jwgl.suse.edu.cn/cjcx/cjcx_cxXsXmcjList.html?gnmkdm=N305007"
+            mx_cj_info = session.post(mx_cj_url, data=mx_cj_url_data).json()
+            if len(mx_cj_info["items"]) == 2:
+                i = 1
+                if len(mx_cj_info["items"]) == 2:
+                    for each2 in mx_cj_info["items"]:
+                        cjlist.append(each2['xmblmc'])
+                        if 'xmcj' not in each2:
+                            cjlist.append("无成绩")
+                        else:
+                            cjlist.append(each2['xmcj'])
+                        if i == 1:
+                            cjlist.append('期末(0%)')
+                            cjlist.append('100')
+                        i += 1
+            else:
+                for each2 in mx_cj_info["items"]:
+                    cjlist.append(each2['xmblmc'])
+                    if 'xmcj' not in each2:
+                        cjlist.append("无成绩")
+                    else:
+                        cjlist.append(each2['xmcj'])
+            cj.append(cjlist)
+    return cj
+
+def login_to_kb(username: str, password: str, term: str, xuenian: str):
     # 登录主页url
     login_url = "http://jwgl.suse.edu.cn/xtgl/login_slogin.html?language=zh_CN&_t="
     # 请求PublicKey的URL
@@ -176,32 +192,51 @@ def login_to_kb(username: str, password: str, term: str):
     table_url = "http://jwgl.suse.edu.cn/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151"
 
     zspt = Longin(username, password, login_url, login_KeyUrl)
+
     response_cookies = zspt.Longin_Home()
     print(response_cookies.cookies)
-    table = TimeTable(response_cookies, table_url, term)
-    return table
+    table = TimeTable(response_cookies, table_url, term, xuenian)
+    return table[0]
 
-def login_to_cj(username: str, password: str, term: str):
+def login_to_cj(username: str, password: str, term: str, xuenian: str):
     # 登录主页url
     login_url = "http://jwgl.suse.edu.cn/xtgl/login_slogin.html?language=zh_CN&_t="
     # 请求PublicKey的URL
     login_KeyUrl = "http://jwgl.suse.edu.cn/xtgl/login_getPublicKey.html?time="
     # 登录后的成绩URL
-    cj_url = "https://jwgl.suse.edu.cn/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005"
+    # cj_url = "https://jwgl.suse.edu.cn/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305007"
+    cj_url = "https://jwgl.suse.edu.cn/cjcx/cjcx_cxXsKcList.html?gnmkdm=N305007"
 
     zspt = Longin(username, password, login_url, login_KeyUrl)
+
     response_cookies = zspt.Longin_Home()
     print(response_cookies.cookies)
-    cj = Cj(response_cookies, cj_url, term)
-def get_kb(username: str, password: str, term: str):
-    kb = login_to_kb("19171040207", "lhz233666", "now")
-    i = 0
-    # for each in kb[0]:
-    #     if i % 6 == 0:
-    #         print("\n")
-    #     print(each, end=" ")
-    #
-    print(str(kb[0]))
+    cj = Cj(response_cookies, cj_url, term, xuenian)
+
+    return cj[0]
+
+def get_cj(username: str, password: str, term: str, xuenian: str):
+    cj = login_to_cj(username, password, term, xuenian)
+    i = 1
+    for each in cj:
+        if i == 2:
+            print(each, end=" ")
+        elif i == 4:
+            print(each, end=" ")
+        elif i == 6:
+            print(each, end=" ")
+        elif i == 7:
+            print(each, end=" ")
+            i = 0
+        else:
+            print(each)
+        i += 1
+
+def get_kb(username: str, password: str, term: str, xuenian: str):
+    kb = login_to_kb(username, password, term, xuenian)
+    for each in kb:
+        print(each)
 
 if __name__ == "__main__":
-    login_to_cj("19171040207", "lhz233666", "now")
+    cj = get_cj("19171040207", "lhz233666", "now", "2020")
+    kb = get_kb("19171040207", "lhz233666", "now", "2020")
