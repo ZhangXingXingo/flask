@@ -36,17 +36,13 @@ class Article(db.Model):
     title = db.Column(db.String(255), nullable=False)
     #text  是否可以为空
     content = db.Column(db.Text, nullable=False)
-
 db.create_all()
 
 @app.route('/post')
 def insert():
     article = Article(title="我我我", content="你你你")
-
     db.session.add(article)
-
     db.session.commit()
-
     return "添加成功"
 @app.route('/get')
 def get():
@@ -74,7 +70,6 @@ def delete():
     return "删除成功"
 @app.route('/')
 def hello():
-
     engine = db.get_engine()
     with engine.connect() as connect:
         res = connect.execute('select 1')
@@ -141,34 +136,7 @@ class Longin():
         else:
             print("用户名或密码不正确，登录失败")
             exit()
-# qsxqj
-# xsxx
-# sjkList
-# xqjmcMap
-# xskbsfxstkzt
-# kbList
-# xsbjList
-# zckbsfxssj
-# djdzList
-# kblx
-# sfxsd
-# xqbzxxszList
-# xkkg
-# jxhjkcList
-# xnxqsfkz
-# class TimeTable():
-#     def __init__(self, session, table_url, term):
-#         if term == "now":
-#             xqm = 12
-#         else :
-#             xqm = 3
-#         data = {"xnm": 2021, "xqm": xqm}
-#         table_info = session.post(table_url, data=data).json()
-#
-#         for each in table_info["kbList"]:
-#             # print(each)
-#             plt = r'{} | {:<8s} | {:<13s} | {:<15s} | {:<22s} | {:<30s}'
-#             print(plt.format(each["xqjmc"], each["jc"], each["cdmc"], each["zcd"], each["kcmc"], each['xm']))
+
 def TimeTable(session, table_url, term):
     if term == "now":
         xqm = 12
@@ -191,30 +159,7 @@ def TimeTable(session, table_url, term):
         kbList.append(each["xm"])
         kb.append(kbList)
     return kb
-# currentPage
-# currentResult
-# entityOrField
-# items
-# limit
-# offset
-# pageNo
-# pageSize
-# showCount
-# sortName
-# sortOrder
-# sorts
-# totalCount
-# totalPage
-# totalResult
-# class Cj():
-#     def __init__(self, session, cj_url):
-#         data = {"xnm": 2021, "xqm": 12, "queryModel.showCount": 15,"queryModel.currentPage": 1}
-#         table_info = session.post(cj_url, data=data).json()
-#
-#         for each in table_info["items"]:
-#             print(each)
-#             plt = r'{} | {:<8d} | {:<13d} | {:<15d} | {:<22d} | {:<30d}'
-#             print(plt.format(each["xqjmc"], each["jc"], each["cdmc"], each["zcd"], each["kcmc"], each['xm']))
+
 def Cj(session, cj_url):
     data = {"xnm": 2021, "xqm": 12, "queryModel.showCount": 15, "queryModel.currentPage": 1}
     table_info = session.post(cj_url, data=data).json()
@@ -261,7 +206,7 @@ def get_kb(username: str, password: str, term: str):
     #     i += 1
     # print(len(kb[0]))
     return str(kb[0])
-###############################################################################################
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1',port=8000)
