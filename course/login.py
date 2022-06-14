@@ -1,10 +1,11 @@
 # -*- coding=utf-8 -*-
+from course_mark.hex2b64 import HB64
+from course_mark import RSAJS
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy, request
 import requests
 import time
 from lxml import etree
-from 数据库.hex2b64 import HB64
-from 数据库 import RSAJS
-
 
 class Longin():
 
@@ -31,11 +32,10 @@ class Longin():
             "Upgrade-Insecure-Requests": "1"
         })
         self.response = self.session.get(self.login_url + self.now_time).content.decode("utf-8")
-
     def Get_csrftoken(self):
         # 获取到csrftoken
         lxml = etree.HTML(self.response)
-        self.csrftoken = lxml.xpath("//input[@id='csrftoken']/@value")[0]
+        self.csrftoken = lxml.xpath("//input[@id='csrftoken']/@value")
 
     def Get_PublicKey(self):
         # 获取到加密公钥
@@ -61,10 +61,10 @@ class Longin():
         login_html = self.session.post(self.login_url + self.now_time, data=login_data)
         # 当提交的表单是正确的，url会跳转到主页，所以此处根据url有没有跳转来判断是否登录成功
         if login_html.url.find("login_slogin.html") == -1:  # -1没找到，说明已经跳转到主页
-            print("登录成功")
+            #print("登录成功")
             return self.session
         else:
-            print("用户名或密码不正确，登录失败")
+            #print("用户名或密码不正确，登录失败")
             exit()
 
 
@@ -194,9 +194,8 @@ def login_to_kb(username: str, password: str, term: str, xuenian: str):
     zspt = Longin(username, password, login_url, login_KeyUrl)
 
     response_cookies = zspt.Longin_Home()
-    print(response_cookies.cookies)
     table = TimeTable(response_cookies, table_url, term, xuenian)
-    return table[0]
+    return str(table[0])
 
 def login_to_cj(username: str, password: str, term: str, xuenian: str):
     # 登录主页url
@@ -210,33 +209,113 @@ def login_to_cj(username: str, password: str, term: str, xuenian: str):
     zspt = Longin(username, password, login_url, login_KeyUrl)
 
     response_cookies = zspt.Longin_Home()
-    print(response_cookies.cookies)
     cj = Cj(response_cookies, cj_url, term, xuenian)
 
-    return cj[0]
+    return str(cj[0])
 
 def get_cj(username: str, password: str, term: str, xuenian: str):
     cj = login_to_cj(username, password, term, xuenian)
-    i = 1
-    for each in cj:
-        if i == 2:
-            print(each, end=" ")
-        elif i == 4:
-            print(each, end=" ")
-        elif i == 6:
-            print(each, end=" ")
-        elif i == 7:
-            print(each, end=" ")
-            i = 0
-        else:
-            print(each)
-        i += 1
+    #i = 1
+    # for each in cj:
+    #     if i == 2:
+    #         print(each, end=" ")
+    #     elif i == 4:
+    #         print(each, end=" ")
+    #     elif i == 6:
+    #         print(each, end=" ")
+    #     elif i == 7:
+    #         print(each, end=" ")
+    #         i = 0
+    #     else:
+    #         print(each)
+    #     i += 1
+    return cj
 
 def get_kb(username: str, password: str, term: str, xuenian: str):
     kb = login_to_kb(username, password, term, xuenian)
-    for each in kb:
-        print(each)
+    return kb
+
+app = Flask(__name__)
+
+# HOSTNAME = '127.0.0.1'
+#
+# PORT = '3306'
+#
+# DATABASE = 'flask'
+#
+# USERNAME = 'root'
+#
+# PASSWORD = 'root'
+#
+# DB_URI = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(USERNAME, PASSWORD, HOSTNAME, PORT, DATABASE)
+#
+# app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+#
+# db = SQLAlchemy(app)
+#
+# class Student(db.Model):
+#     __tablename__ = 'student'
+#     #主键 是否自增
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     #varchar(255) 是否可以为空
+#     name = db.Column(db.String(50), nullable=False)
+#     password = db.Column(db.String(50), nullable=False)
+#     #text  是否可以为空
+#     kb = db.Column(db.Text, nullable=False)
+#     cj = db.Column(db.Text, nullable=False)
+# db.create_all()
+#
+# @app.route('/post')
+# def insert():
+#     article = Student(title="我我我", content="你你你")
+#     db.session.add(article)
+#     db.session.commit()
+#     return "添加成功"
+#
+# @app.route('/get/kb')
+# def get_studuet_kb():
+#     username = request.args.get("username")
+#     student = Student.query.filter(Student.name == username)[0]
+#     return student.kb
+#
+# @app.route('/get/cj')
+# def get_student_cj():
+#     username = request.args.get("username")
+#     student = Student.query.filter(Student.name == username)[0]
+#     return student.cj
+
+@app.route('/put_kb')
+def put_kb():
+    username = request.args.get("username")
+    term = request.args.get("term")
+    xuenian = request.args.get("xuenian")
+    password = request.args.get("password")
+    # student = Student.query.filter(Student.name == username)[0]
+    # student.name = username
+    # password = student.password
+    kb = get_kb(username, password, term, xuenian)
+    # student.kb = kb
+    # db.session.commit()
+    return kb
+
+@app.route('/put_cj')
+def put_cj():
+    username = request.args.get("username")
+    term = request.args.get("term")
+    xuenian = request.args.get("xuenian")
+    password = request.args.get("password")
+    # student = Student.query.filter(Student.name == username)[0]
+    # student.name = username
+    # password = student.password
+    cj = get_cj(username, password, term, xuenian)
+    # student.cj = cj
+    # db.session.commit()
+    return cj
+
 
 if __name__ == "__main__":
-    cj = get_cj("19171040207", "lhz233666", "now", "2020")
-    kb = get_kb("19171040207", "lhz233666", "now", "2020")
+
+    app.run(host='127.0.0.1', port=8000)
+
+

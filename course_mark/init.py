@@ -15,7 +15,7 @@ HOSTNAME = '127.0.0.1'
 
 PORT = '3306'
 
-DATABASE = 'test'
+DATABASE = 'flask'
 
 USERNAME = 'root'
 
@@ -29,7 +29,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
 class Article(db.Model):
-    __tablename__ = 'kb'
+    __tablename__ = 'article'
     #主键 是否自增
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     #varchar(255) 是否可以为空
@@ -52,14 +52,12 @@ def get():
 @app.route('/put/kb')
 def put():
     article = Article.query.filter_by(id=2)[0]
-    article.title = "哈哈哈"
+    article.title = "asdasdasdasd"
     username = request.args.get("username")
     password = request.args.get("password")
     term = request.args.get("term")
     kb = get_kb(username, password, term)
-
     article.content = kb
-
     db.session.commit()
     return "修改成功"
 @app.route('/delete')
@@ -178,7 +176,6 @@ def login_to_kb(username: str, password: str, term: str):
 
     zspt = Longin(username, password, login_url, login_KeyUrl)
     response_cookies = zspt.Longin_Home()
-    print(response_cookies.cookies)
     table = TimeTable(response_cookies, table_url, term)
     return table
 def login_to_cj(username: str, password: str):
@@ -197,7 +194,7 @@ def login_to_cj(username: str, password: str):
     table = TimeTable(response_cookies, table_url)
     #cj = Cj(response_cookies, cj_url)
 def get_kb(username: str, password: str, term: str):
-    kb = login_to_kb("19171040207", "lhz233666", "now")
+    kb = login_to_kb(username, password, term)
     # i = 0
     # for each in kb[0]:
     #     if i % 6 == 0:
@@ -209,5 +206,10 @@ def get_kb(username: str, password: str, term: str):
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1',port=8000)
+    #app.run(host='127.0.0.1',port=8000)
+    name = "20161020110"
+    password = "wanancl926"
+
+    kb = get_kb(name, password, "now")
+    print(kb)
 
